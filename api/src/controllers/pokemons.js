@@ -1,7 +1,8 @@
-const db = require('../db');
-const { Pokemon } = require('../db');
+const { Pokemon, Type } = require('../db');
 const ModelCrud = require('./index');
 const axios = require('axios').default;
+const { POKEMON_URL } = process.env;
+
 
 class PokemonModel extends ModelCrud {
     constructor (model) {
@@ -15,32 +16,51 @@ class PokemonModel extends ModelCrud {
                 const dbPokemon = await this.model.findAll({
                     where: {
                         name
+                    },
+                    include: {
+                        model: Type
                     }
-                });                    
-                const apiPokemon = await axios(`https://pokeapi.co/api/v2/pokemon/${name}`);
-                const pokemon = (apiPokemon ? apiPokemon.data : dbPokemon);
+                });  
+                if (dbPokemon.length) {
+                    res.send(dbPokemon);
+                } else {
+                    const apiPokemon = await axios(POKEMON_URL + `/${name}`);
 
-                console.log(pokemon);
-                res.send(pokemon);
+                    res.send(apiPokemon.data);
+                }
             } else {
-                const dbPokemon = await this.model.findAll();
-                const apiPokemonA = await axios("https://pokeapi.co/api/v2/pokemon");
-                const apiPokemonB = await axios(apiPokemonA.data.next);
-                const pokemons = dbPokemon.concat(apiPokemonA.data.results.concat(apiPokemonB.data.results));
+                const dbPokemon = await this.model.findAll({
+                    include: {
+                        model: Type
+                    }
+                });
+                const first20 = await axios(POKEMON_URL);
+                const second20 = await axios(first20.data.next);
+                // const resultsApiTotal = first20.data.results.concat(second20.data.resuts);              
+                const datosPokemon = await Promise.all(first20.data.results.map( async u => {
+                    const p = await axios(u.url);
+                    return {
+                        name: p.data.name,
+                        image: p.data.sprites.other.dream_world.front_default,
+                        types: p.data.types
+                    };
+                }));
+                const allPokemons = dbPokemon.concat(datosPokemon);
 
-                res.send(pokemons);
+                res.send(allPokemons);
             }
 
         } catch (error) {
             next(error);
         }
     };
+
     getPokemonById = async (req, res, next) => {
         try {
             const { id } = req.params;
 
             if (!isNaN(id)) {
-                const apiPokemon = await axios(`https://pokeapi.co/api/v2/pokemon/${id}`)
+                const apiPokemon = await axios(POKEMON_URL + `/${id}`)
                 const pokemon = apiPokemon.data;
 
                 res.send(pokemon);
@@ -55,6 +75,7 @@ class PokemonModel extends ModelCrud {
         }
     };
 }
-const pokemonController = new PokemonModel(Pokemon);
+
+const pokemonController = new PokemonModel(Pokemon, POKEMON_URL);
 
 module.exports = pokemonController;

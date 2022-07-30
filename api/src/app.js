@@ -21,10 +21,6 @@ server.use(setHeaders);
 
 server.use('/', routes);
 
-server.get('/', (req, res) => {
-  res.send('Home-Back de PokeWeb de David');
-})
-
 // Error catching endware - Control de errores.
 server.use(errorHandler);
 
