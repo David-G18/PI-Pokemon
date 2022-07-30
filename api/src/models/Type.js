@@ -10,6 +10,7 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING,
         }
     }, {
+        // Hace que las marcas de tiempo no se creen en la base de datos
         timestamps: false,
     })
 };

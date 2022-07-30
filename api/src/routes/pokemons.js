@@ -5,7 +5,7 @@ const router = Router();
 
 router.get('/', pokemonController.getPokemon);
 router.get('/:id', pokemonController.getPokemonById);
-router.post('/', pokemonController.create);
+router.post('/', pokemonController.createPokemon);
 router.put('/:id', pokemonController.update);
 router.delete('/:id', pokemonController.delete);
 

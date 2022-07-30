@@ -1,9 +1,26 @@
-const { v4: uuidv4 } = require('uuid');
+const axios = require('axios').default;
+const { TYPE_URL } = process.env;
+const { Type } = require('../db');
 
 class ModelCrud {
     constructor (model) {
         this.model = model;
     }
+    // Llena la base de datos "Type" con los datos de la api
+    fillDB = async () => {
+        const myTypes = await this.model.findAll();
+
+        if (!myTypes.length) {
+            const apiTypes = await axios(TYPE_URL);
+            await Promise.all(apiTypes.data.results.map(async (t, i) => {
+                await Type.create({
+                id: i +1,
+                name: t.name
+                });
+            }));
+        }
+    };
+    
     // Busca un pokemon o un tipo (dependiendo el modelo que se le pase) por su respectivo id
     getById = async (req, res, next) => {
         try {
@@ -12,22 +29,6 @@ class ModelCrud {
             const element = await this.model.findByPk(id);
 
             res.send(element);
-        } catch (error) {
-            next(error);
-        }
-    };
-
-    // Crea un elemento del modelo, y donde la libreria uuid se encarga de crear un id unico
-    create = async (req, res, next) => {
-        try {
-            const element = req.body;
-
-            await this.model.create({
-                ...element,
-                id: uuidv4()
-            });
-
-            res.status(201).send('The element has been created successfully');
         } catch (error) {
             next(error);
         }
