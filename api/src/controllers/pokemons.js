@@ -35,8 +35,7 @@ class PokemonModel extends ModelCrud {
                     }
                 });
                 const first20 = await axios(POKEMON_URL);
-                const second20 = await axios(first20.data.next);
-                // const resultsApiTotal = first20.data.results.concat(second20.data.resuts);              
+                const second20 = await axios(first20.data.next);             
                 const datosPokemon = await Promise.all(first20.data.results.map( async u => {
                     const p = await axios(u.url);
                     return {
@@ -45,7 +44,15 @@ class PokemonModel extends ModelCrud {
                         types: p.data.types
                     };
                 }));
-                const allPokemons = dbPokemon.concat(datosPokemon);
+                const datosPokemon2 = await Promise.all(second20.data.results.map( async u => {
+                    const p = await axios(u.url);
+                    return {
+                        name: p.data.name,
+                        image: p.data.sprites.other.dream_world.front_default,
+                        types: p.data.types
+                    };
+                }));
+                const allPokemons = dbPokemon.concat(datosPokemon.concat(datosPokemon2));
 
                 res.send(allPokemons);
             }
