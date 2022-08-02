@@ -4,7 +4,6 @@ const axios = require('axios').default;
 const { POKEMON_URL } = process.env;
 const { v4: uuidv4 } = require('uuid');
 
-
 class PokemonModel extends ModelCrud {
     constructor (model) {
         super(model);
@@ -27,12 +26,30 @@ class PokemonModel extends ModelCrud {
                 if (dbPokemon.length) {
                     res.send(dbPokemon);
                 } else {
-                    const apiPokemon = await axios(POKEMON_URL + `/${name}`);
-
-                    res.send(apiPokemon.data);
+                    try {
+                        const apiPokemon = await axios(POKEMON_URL + `/${name}`);
+                        const pokemon = [apiPokemon.data].map(p => {
+                            const types = p.types.map(t => t.type)
+                            return {
+                                id: p.id,
+                                name: p.name,
+                                hp: p.stats[0].base_stat,
+                                attack: p.stats[1].base_stat,
+                                defense: p.stats[2].base_stat,
+                                speed: p.stats[5].base_stat,
+                                height: p.height,
+                                weight: p.weight,
+                                image: p.sprites.other.dream_world.front_default,
+                                types
+                            }
+                        });
+                        res.send(pokemon);
+                    } catch (error) {
+                        res.status(404).send('The Pokemon with the provided name does not currently exist');
+                    }
                 }
             } else {
-                // Si no me pasan un nombre por query, devulvo todo los pokemons tantos lo que haya
+                // Si no me pasan un nombre por query, devuelvo todo los pokemons tantos lo que haya
                 // en la base de datos, como los de la api
                 const dbPokemon = await this.model.findAll({
                     include: {
@@ -43,10 +60,9 @@ class PokemonModel extends ModelCrud {
                 const second20 = await axios(first20.data.next);             
                 const datosPokemon = await Promise.all(first20.data.results.map( async url => {
                     const pokemon = await axios(url.url);
-                    const types = pokemon.data.types.map( t => {
-                        return t.type;
-                    });
+                    const types = pokemon.data.types.map(t => t.type);
                     return {
+                        id: pokemon.data.id,
                         name: pokemon.data.name,
                         image: pokemon.data.sprites.other.dream_world.front_default,
                         types
@@ -54,10 +70,9 @@ class PokemonModel extends ModelCrud {
                 }));
                 const datosPokemon2 = await Promise.all(second20.data.results.map( async url => {
                     const pokemon = await axios(url.url);
-                    const types = pokemon.data.types.map( t => {
-                        return t.type;
-                    });
+                    const types = pokemon.data.types.map(t => t.type);
                     return {
+                        id: pokemon.data.id,
                         name: pokemon.data.name,
                         image: pokemon.data.sprites.other.dream_world.front_default,
                         types
@@ -80,9 +95,23 @@ class PokemonModel extends ModelCrud {
 
             if (!isNaN(id)) {
                 const apiPokemon = await axios(POKEMON_URL + `/${id}`)
-                const pokemon = apiPokemon.data;
+                const pokemon = [apiPokemon.data].map(p => {
+                    const types = p.types.map(t => t.type)
+                    return {
+                        id: p.id,
+                        name: p.name,
+                        hp: p.stats[0].base_stat,
+                        attack: p.stats[1].base_stat,
+                        defense: p.stats[2].base_stat,
+                        speed: p.stats[5].base_stat,
+                        height: p.height,
+                        weight: p.weight,
+                        image: p.sprites.other.dream_world.front_default,
+                        types
+                    }
+                });
 
-                res.send(pokemon);
+                res.send(pokemon[0]);
             } else {
                 const dbPokemon = await this.model.findByPk(id, {
                     include: {
@@ -102,11 +131,10 @@ class PokemonModel extends ModelCrud {
         try {
             await this.fillDB();
             const pokemon = req.body;
-            const id = uuidv4();
 
             const newPokemon = await this.model.create({
                 ...pokemon,
-                id
+                id: uuidv4()
             });
 
             const typeOne = await Type.findByPk(pokemon.idTypeOne);
