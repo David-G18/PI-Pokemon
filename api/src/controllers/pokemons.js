@@ -1,8 +1,9 @@
 const { Pokemon, Type } = require('../db');
 const ModelCrud = require('./index');
 const axios = require('axios').default;
-const { POKEMON_URL } = process.env;
 const { v4: uuidv4 } = require('uuid');
+const POKEMON_URL = "https://pokeapi.co/api/v2/pokemon";
+
 
 class PokemonModel extends ModelCrud {
     constructor (model) {

@@ -1,5 +1,5 @@
 const axios = require('axios').default;
-const { TYPE_URL } = process.env;
+const TYPE_URL = "https://pokeapi.co/api/v2/type";
 const { Type } = require('../db');
 
 class ModelCrud {
