@@ -14,12 +14,12 @@ export default function PokemonCreate () {
     const [errors, setErrors] = useState({});
     const [input, setInput] = useState({
         name: '',
-        hp: '',
-        attack: '',
-        defense: '',
-        speed: '',
-        height: '',
-        weight: '',
+        hp: 1,
+        attack: 5,
+        defense: 5,
+        speed: 5,
+        height: 1,
+        weight: 1,
         image: '',
         idTypeOne: '',
         idTypeTwo: ''
@@ -44,12 +44,6 @@ export default function PokemonCreate () {
             errors.attack = "Debe ser un valor numerico entre 5 y 190";
         } else if (input.attack < 5 || input.attack > 190) {
             errors.attack = "Debe ser un valor numerico entre 5 y 190";
-        };
-
-        if (isNaN(input.defense)) {
-            errors.defense = "Debe ser un valor numerico entre 5 y 230";
-        } else if (input.defense < 5 || input.defense > 230) {
-            errors.defense = "Debe ser un valor numerico entre 5 y 230";
         };
 
         if (isNaN(input.defense)) {
