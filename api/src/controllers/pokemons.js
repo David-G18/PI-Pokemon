@@ -58,8 +58,9 @@ class PokemonModel extends ModelCrud {
                     }
                 });
                 const first20 = await axios(POKEMON_URL);
-                const second20 = await axios(first20.data.next);             
-                const datosPokemon = await Promise.all(first20.data.results.map( async url => {
+                const second20 = await axios(first20.data.next);           
+                const apiPokemons = first20.data.results.concat(second20.data.results)  
+                const datosPokemon = await Promise.all(apiPokemons.map( async url => {
                     const pokemon = await axios(url.url);
                     const types = pokemon.data.types.map(t => t.type);
                     return {
@@ -69,17 +70,17 @@ class PokemonModel extends ModelCrud {
                         types
                     };
                 }));
-                const datosPokemon2 = await Promise.all(second20.data.results.map( async url => {
-                    const pokemon = await axios(url.url);
-                    const types = pokemon.data.types.map(t => t.type);
-                    return {
-                        id: pokemon.data.id,
-                        name: pokemon.data.name,
-                        image: pokemon.data.sprites.other.dream_world.front_default,
-                        types
-                    };
-                }));
-                const allPokemons = dbPokemon.concat(datosPokemon.concat(datosPokemon2));
+                // const datosPokemon2 = await Promise.all(second20.data.results.map( async url => {
+                //     const pokemon = await axios(url.url);
+                //     const types = pokemon.data.types.map(t => t.type);
+                //     return {
+                //         id: pokemon.data.id,
+                //         name: pokemon.data.name,
+                //         image: pokemon.data.sprites.other.dream_world.front_default,
+                //         types
+                //     };
+                // }));
+                const allPokemons = dbPokemon.concat(apiPokemons);
 
                 res.send(allPokemons);
             }
