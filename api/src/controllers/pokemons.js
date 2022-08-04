@@ -60,8 +60,8 @@ class PokemonModel extends ModelCrud {
                 const first20 = await axios(POKEMON_URL);
                 const second20 = await axios(first20.data.next);           
                 const apiPokemons = first20.data.results.concat(second20.data.results)  
-                const datosPokemon = await Promise.all(apiPokemons.map( async url => {
-                    const pokemon = await axios(url.url);
+                const datosPokemon = await Promise.all(apiPokemons.map( async poke => {
+                    const pokemon = await axios(poke.url);
                     const types = pokemon.data.types.map(t => t.type);
                     return {
                         id: pokemon.data.id,
@@ -80,7 +80,7 @@ class PokemonModel extends ModelCrud {
                 //         types
                 //     };
                 // }));
-                const allPokemons = dbPokemon.concat(apiPokemons);
+                const allPokemons = dbPokemon.concat(datosPokemon);
 
                 res.send(allPokemons);
             }
