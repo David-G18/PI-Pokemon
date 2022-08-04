@@ -15,7 +15,7 @@ export const FILTER_BY_TYPE = "FILTER_BY_TYPE";
 
 export const getAllPokemons = () => {
     return async function (dispatch) {
-        const pokemons = await axios('http://localhost:3001/pokemons');
+        const pokemons = await axios('/pokemons');
 
         return dispatch({
             type: GET_ALL_POKEMONS,
@@ -27,7 +27,7 @@ export const getAllPokemons = () => {
 export const getPokemon = (name) => {
     return async function (dispatch) {
         try {
-            const pokemon = await axios(`http://localhost:3001/pokemons?name=${name}`);
+            const pokemon = await axios(`/pokemons?name=${name}`);
             return dispatch({
                 type: GET_POKEMON,
                 payload: pokemon.data
@@ -44,7 +44,7 @@ export const getPokemon = (name) => {
 export const getPokemonDetail = (id) => {
     return async function (dispatch) {
         try {
-            const pokemonDetail = await axios(`http://localhost:3001/pokemons/${id}`);
+            const pokemonDetail = await axios(`/pokemons/${id}`);
             return dispatch({
                 type: GET_POKEMON_DETAIL,
                 payload: pokemonDetail.data
@@ -61,7 +61,7 @@ export const getPokemonDetail = (id) => {
 export const createPokemon = (payload) => {
     return async function () {
         try {
-            await axios.post('http://localhost:3001/pokemons', payload);
+            await axios.post('/pokemons', payload);
             window.alert('Pokemon Creado');
         } catch (error) {
             window.alert('Error al crear el Pokemons');
@@ -71,7 +71,7 @@ export const createPokemon = (payload) => {
 
 export const getAllTypes = () => {
     return async function (dispatch) {
-        const types = await axios ("http://localhost:3001/types");
+        const types = await axios ("/types");
 
         return dispatch({
             type: GET_ALL_TYPES,
