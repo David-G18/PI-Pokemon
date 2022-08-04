@@ -129,7 +129,6 @@ class PokemonModel extends ModelCrud {
 
     createPokemon = async (req, res, next) => {
         try {
-            await this.fillDB();
             const pokemon = req.body;
 
             const newPokemon = await this.model.create({
@@ -137,11 +136,14 @@ class PokemonModel extends ModelCrud {
                 id: uuidv4()
             });
 
-            const typeOne = await Type.findByPk(pokemon.idTypeOne);
-            const typeTwo = await Type.findByPk(pokemon.idTypeTwo);
-
-            if(typeOne) await newPokemon.addType(typeOne, {through: 'Pokemon_type'});
-            if(typeTwo) await newPokemon.addType(typeTwo, {through: 'Pokemon_type'});
+            if (pokemon.idTypeOne) {
+                const typeOne = await Type.findByPk(pokemon.idTypeOne);
+                await newPokemon.addType(typeOne, {through: 'Pokemon_type'});
+            };
+            if (pokemon.idTypeTwo) {
+                const typeTwo = await Type.findByPk(pokemon.idTypeTwo);
+                await newPokemon.addType(typeTwo, {through: 'Pokemon_type'});
+            };
 
             res.status(201).send('The Pokemon has been created successfully');
         } catch (error) {

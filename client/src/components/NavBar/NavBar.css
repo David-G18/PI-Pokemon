@@ -1,0 +1,14 @@
+.App-header {
+    background-color: #D9E3D5;
+    height: 10vh;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: calc(10px + 2vmin);
+    justify-content: space-around;
+}
+
+.image_logo {
+    width: 8%;
+    height: 90%;
+}

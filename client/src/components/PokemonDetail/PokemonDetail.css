@@ -1,0 +1,31 @@
+.imagePokemon {
+    width: 25vw;
+    height: 50vh;
+}
+
+.containerDetail {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100vw;
+    height: 90vh;
+}
+
+#idPokemon {
+    text-decoration: underline;
+}
+
+.statsCard {
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+    height: 70vh;
+    background-color: #8F87D9;
+    border-radius: 10%;
+    justify-content: center;
+}
+
+.types {
+    display: flex;
+    justify-content: space-around;
+}

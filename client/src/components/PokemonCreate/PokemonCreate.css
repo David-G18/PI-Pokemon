@@ -1,0 +1,75 @@
+.creationFormConatiner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 20px;
+    height: 90vh;
+    width: 100vw;
+}
+
+.formCreate {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 80vw;
+    align-items: center;
+    line-height: 2;
+}
+
+.containerInput {
+    display: flex;
+    flex-direction: row;
+    width: 90%;
+    margin-bottom: 20px;
+}
+
+.principalData, .atributtes {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    text-align: end;
+    align-items: flex-end;
+    justify-content: flex-start;
+}
+
+.principalData input {
+    margin-left: 10px;
+}
+
+.principalData span {
+    font-weight: 700;
+}
+
+.atributtes span {
+    font-weight: 700;
+}
+
+.atributtes input {
+    margin-left: 10px;
+}
+
+.containerInput p {
+    margin: 0px;
+    color:red;
+    font-weight: 700;
+}
+
+.createButton {
+    background: #fff;
+    color: blue;
+    border: 2px solid #666;
+    border-radius: 15%;
+    height: 70px;
+    width: 180px;
+    cursor: pointer;
+    font-size: x-large;
+    text-transform: uppercase;
+    font-family: "Minecraft";
+}
+
+.createButton.disabled {
+    pointer-events: none;
+    box-shadow: none;
+    color: #999;
+}
