@@ -3,6 +3,7 @@ class ModelCrud {
         this.model = model;
     }   
     // Busca un pokemon o un tipo (dependiendo el modelo que se le pase) por su respectivo id
+    // Debe estar guardado en la base de datos
     getById = async (req, res, next) => {
         try {
             const { id } = req.params;
