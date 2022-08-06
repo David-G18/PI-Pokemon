@@ -4,7 +4,6 @@ const axios = require('axios').default;
 const { v4: uuidv4 } = require('uuid');
 const POKEMON_URL = "https://pokeapi.co/api/v2/pokemon";
 
-
 class PokemonModel extends ModelCrud {
     constructor (model) {
         super(model);
@@ -58,20 +57,13 @@ class PokemonModel extends ModelCrud {
                     }
                 });
                 const first20 = await axios(POKEMON_URL);
-                const second20 = await axios(first20.data.next);           
-                const apiPokemons = first20.data.results.concat(second20.data.results)  
-                const datosPokemon = await Promise.all(apiPokemons.map( async poke => {
-                    const pokemon = await axios(poke.url);
-                    const types = pokemon.data.types.map(t => t.type);
-                    return {
-                        id: pokemon.data.id,
-                        name: pokemon.data.name,
-                        image: pokemon.data.sprites.other.dream_world.front_default,
-                        types
-                    };
-                }));
-                // const datosPokemon2 = await Promise.all(second20.data.results.map( async url => {
-                //     const pokemon = await axios(url.url);
+                const second20 = await axios(first20.data.next);         
+                
+                // First way to take the data from the api (Deployment)
+
+                // const apiPokemons = first20.data.results.concat(second20.data.results)  
+                // const datosPokemon = await Promise.all(apiPokemons.map( async poke => {
+                //     const pokemon = await axios(poke.url);
                 //     const types = pokemon.data.types.map(t => t.type);
                 //     return {
                 //         id: pokemon.data.id,
@@ -80,7 +72,36 @@ class PokemonModel extends ModelCrud {
                 //         types
                 //     };
                 // }));
-                const allPokemons = dbPokemon.concat(datosPokemon);
+                // const allPokemons = dbPokemon.concat(datosPokemon);
+
+                // End of the first way
+
+                // If the read ECONNRESET error appears, try this way and comment the previus way
+                // Second way (localHost)
+
+                const datosPokemon = await Promise.all(first20.data.results.map( async poke => {
+                        const pokemon = await axios(poke.url);
+                        const types = pokemon.data.types.map(t => t.type);
+                        return {
+                            id: pokemon.data.id,
+                            name: pokemon.data.name,
+                            image: pokemon.data.sprites.other.dream_world.front_default,
+                            types
+                        };
+                }));
+                const datosPokemon2 = await Promise.all(second20.data.results.map( async url => {
+                    const pokemon = await axios(url.url);
+                    const types = pokemon.data.types.map(t => t.type);
+                    return {
+                        id: pokemon.data.id,
+                        name: pokemon.data.name,
+                        image: pokemon.data.sprites.other.dream_world.front_default,
+                        types
+                    };
+                }));
+                const allPokemons = dbPokemon.concat(datosPokemon.concat(datosPokemon2));
+
+                // End of the second way
 
                 res.send(allPokemons);
             }
@@ -154,6 +175,6 @@ class PokemonModel extends ModelCrud {
     };
 }
 
-const pokemonController = new PokemonModel(Pokemon, POKEMON_URL);
+const pokemonController = new PokemonModel(Pokemon);
 
 module.exports = pokemonController;

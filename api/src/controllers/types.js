@@ -1,4 +1,6 @@
+const axios = require('axios').default;
 const { Type } = require('../db');
+const TYPE_URL = "https://pokeapi.co/api/v2/type";
 const ModelCrud = require('./index');
 
 class TypeModel extends ModelCrud {
@@ -17,6 +19,21 @@ class TypeModel extends ModelCrud {
             
         } catch (error) {
             next(error);
+        }
+    };
+
+    // Llena la base de datos "Type" con los datos de la api
+    fillDB = async () => {
+        const myTypes = await this.model.findAll();
+
+        if (!myTypes.length) {
+            const apiTypes = await axios(TYPE_URL);
+            await Promise.all(apiTypes.data.results.map(async (t, i) => {
+                await Type.create({
+                id: i +1,
+                name: t.name
+                });
+            }));
         }
     };
 }
